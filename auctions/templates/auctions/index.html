@@ -1,0 +1,32 @@
+{% extends "auctions/layout.html" %} {% block body %}
+<h2 class="text-center mb-4">Active Listings</h2>
+<div class="container text-center">
+	{% for auction in auctions %}
+	<div class="card card-anim d-inline-block m-4" style="width: 18rem">
+		{% if auction.link %}
+		<img
+			class="card-img-top img-show"
+			src="{{auction.link}}"
+			alt="Image Product"
+		/>
+		{% else %} {% load static %}
+		<img
+			class="card-img-top img-show"
+			src="{% static 'auctions/no-photo.jpg' %}"
+			alt="Image Product"
+		/>
+		{% endif %}
+		<div class="card-body">
+			<h5 class="card-title text-truncate">{{auction.title}}</h5>
+			<p class="card-text">{{auction.start_price}}$</p>
+			<div class="text-center text-card">
+				<p class="text-card">{{auction.description}}</p>
+			</div>
+			<div class="text-center">
+				<a href="/{{ auction.id }}" class="btn btn-primary">Visit</a>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<div class="container text-center">
+	{% for item in items %}
+	<div class="card card-anim d-inline-block m-4" style="width: 18rem">
+		{% if item.link %}
+		<img class="card-img-top" src="{{item.link}}" alt="Image Product" />
+		{% else %} {% load static %}
+		<img
+			class="card-img-top"
+			src="{% static 'auctions/no-photo.jpg' %}"
+			alt="Image Product"
+		/>
+		{% endif %}
+		<div class="card-body">
+			<h5 class="card-title text-truncate">{{item.title}}</h5>
+			<div class="text-center text-card">
+				<p class="text-card">{{item.description}}</p>
+			</div>
+			<div class="text-center">
+				<a href="/{{ item.id }}" class="btn btn-primary">Visit</a>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

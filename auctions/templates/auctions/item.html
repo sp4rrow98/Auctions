@@ -1,0 +1,145 @@
+{% extends "auctions/layout.html" %} {% block body %}
+
+<!-- Messages -->
+{% if message %}
+<div class="alert alert-danger">{{message}}</div>
+{% endif %}
+{% if auction.active == 0 %}
+<div class="alert alert-danger" role="alert">
+	<h1 class="text-center">Auction has been closed!</h1>
+</div>
+
+{% endif %}
+{% if winner.user == user and auction.active == 0 %}
+<div class="alert alert-success" role="alert">
+	<h1 class="text-center">Auction won by user {{ winner.user }}!</h1>
+</div>
+{% endif %}
+
+<!-- Close auction -->
+{% if request.user == auction.user and auction.active == True %}
+<form action="{% url 'item' auction.id %}" method="POST" value="close_auction">
+	{% csrf_token %}
+	<div class="d-flex justify-content-center mb-3">
+		<button
+			type="b"
+			class="btn btn-danger btn-lg btn-block"
+			name="close_auction"
+			style="width: 50%"
+			value="0">
+			Close auction
+		</button>
+	</div>
+</form>
+
+{% endif %}
+<div class="container text-center">
+	{% if auction.link %}
+	<img src="{{auction.link}}" class="img-fluid w-50" alt="" />
+	{% else %} {% load static %}
+	<img
+		class="card-img-top w-50"
+		src="{% static 'auctions/no-photo.jpg' %}"
+		alt="Image Product"/>
+	{% endif %}
+</div>
+
+<!-- Product -->
+<div class="container">
+	<div class="card text-center mt-3">
+		<div class="card-body">
+			<h5 class="card-title"><h2>{{auction.title}}</h2></h5>
+      <div class="text-left">
+        <label class="text-left" for=""><strong>Description:</strong></label>
+      </div>
+      <p class="card-text text-left">{{auction.description}}</p>
+			<form action="{% url 'item' auction.id %}" method="POST">
+				{% csrf_token %}
+				<input type="hidden" name="on_watchlist" value="on_watchlist" />
+				{% if auction.active == 1 %} {% if watchlist %}
+				<button type="submit" class="btn btn-sm btn-danger">
+					Remove from watchlist
+				</button>
+				{% else %}
+				<button type="submit" class="btn btn-sm btn-info">
+					Add to watchlist
+				</button>
+				{% endif %} {% endif %}
+			</form>
+		</div>
+		<div class="card-footer text-muted">
+			{% if winner %}
+          <strong>{{winner.price}} $</strong>
+      {% else %} 
+          <strong>{{auction.start_price}} $</strong>
+      {% endif %}
+		</div>
+	</div>
+</div>
+
+{% if auction.active == 1 %}
+<div class="container">
+	<form action="{% url 'item' auction.id %}" , method="POST">
+		{% csrf_token %}
+		<label for="Place bid"> Place bid: </label>
+		<div class="input-group">
+			
+			<input type="number" name="price" class="form-control input-group" step=".01" /><span class="input-group-text">$</span>
+		</div>
+		<br />
+		<label for=""></label>
+		<button type="submit" class="btn btn-success">Send Bid</button>
+		<br />
+	</form>
+</div>
+<hr />
+
+<div class="container">
+	{% for bid in bids %}
+	<h6><span class="badge badge-secondary">New</span></h6>
+	<div class="card">
+		<div class="card-header text-center">Placed by: <strong>{{bid.user}}</strong></div>
+		<div class="card-body">
+			<blockquote class="blockquote mb-0">
+				<p>Amount: <strong>{{bid.price}} $</strong></p>
+				<footer class="blockquote-footer text-right">{{bid.time}}</footer>
+			</blockquote>
+		</div>
+	</div>
+	<br />
+	{% endfor %}
+</div>
+<hr />
+
+<div class="container bg-light">
+	<form action="{% url 'item' auction.id %}" method="POST">
+		{% csrf_token %}
+		<!-- <div class="form-group">
+			<label for="title" class="form-label" name="title">Comment title:</label>
+			<input type="text" name="title" class="form-control" />
+		</div> -->
+		<div class="form-group">
+			<label for="comment" rows="3" class="form-label"> Add Comment:</label>
+			<textarea name="comment" class="form-control" rows="4"></textarea>
+		</div>
+		<button type="submit" class="btn btn-dark">Comment</button>
+	</form>
+</div>
+<br>
+<div class="container">
+  <p><strong>Comments:</strong> </p>
+	{% for comment in comments %}
+
+	<div class="card mb-3">
+		<div class="card-body">
+			<p class="card-text">{{comment.comment}}</p>
+			<p class="card-text blockquote-footer text-right">
+				<small class="text-muted">{{comment.user}}</small>
+			</p>
+		</div>
+	</div>
+	{% endfor %}
+ </div>
+  {% endif %} 
+  {% endblock %}
+
